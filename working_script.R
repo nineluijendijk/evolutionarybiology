@@ -145,7 +145,7 @@ plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, group
   theme_light() +
   labs(title = "Number of leaves of each shape,\ngrouped by treatment",
        x="Leaf shape",
-       y="Countt")
+       y="Count")
 
 plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, grouped by population size
   ggplot()+ 
@@ -153,7 +153,9 @@ plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, groupe
   theme_light() +
   labs(title = "Number of leaves of each shape,\ngrouped by population size",
        x="Leaf shape",
-       y="Countt")
+       y="Count")+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))+
+  guides(fill=guide_legend(title="Population size"))
 
 img_leafshapes <- image_read(here("images/leaf_shapes.png")) %>% image_ggplot() #import the picture showing the different leaf shapes
 
