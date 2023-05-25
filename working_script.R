@@ -1,5 +1,7 @@
 library(readxl)
 library(tidyverse)
+library(gdata)
+install.packages("gdata")
 
 data_raw <- read_excel("data/arabidopsis_data.xlsx", col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
@@ -16,13 +18,18 @@ data <- mutate(data_raw,
                "Length_dif" = data$Length_longest_leaf_a - data$Length_longest_leaf_b,
                "Number_dif" = data$Number_leaves_a - data$Number_leaves_b) #calculating differences between before and after treatment
 
-#names <- c("Length_longest_leaf_b", "Number_leaves_b", "Number_leaves_a", "Length_longest_leaf_a", "Leaf_shape",  "Wet_weight", "Length_dif", "Number_dif")
+data_complete <- left_join(data, metadata, by = "Group")
 
-#for (i in length(names)) {
-# sw_results[[i]] <- data %>% group_by(Group) %>% summarize(p.value_sw = shapiro.test(!!sym(names[i]))$p.value)
-#}
+names <- c("Length_longest_leaf_b", "Number_leaves_b", "Number_leaves_a", "Length_longest_leaf_a",  "Wet_weight", "Length_dif", "Number_dif")
+
+sw_results <- vector("list", 7)
+
+for (i in 1:7) {
+result <- data_complete %>% group_by(Size) %>% summarize(sw = shapiro.test(!!sym(names[i]))$p.value) %>% rename.vars(to = paste0(names[i], "P.value_sw"), from ="sw")
+ sw_results[[i]] <- result
+}
 
 #Finding which groups aren't normally distributed
-data %>% group_by(Group) %>% summarize(p.value_sw = shapiro.test(Wet_weight)$p.value) %>% filter(p.value_sw < 0.05)
-data %>% group_by(Group) %>% summarize(p.value_sw = shapiro.test(Length_dif)$p.value) %>% filter(p.value_sw < 0.05)
-data %>% group_by(Group) %>% summarize(p.value_sw = shapiro.test(Number_dif)$p.value) %>% filter(p.value_sw < 0.05)
+data_complete %>% group_by(Size) %>% summarize(p.value_sw = shapiro.test(Wet_weight)$p.value) %>% filter(p.value_sw < 0.05)
+
+
