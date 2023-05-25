@@ -1,5 +1,6 @@
 ---
-title: "Untitled"
+title: "Data analysis of Arabidopsis experiment B1"
+author: Nine Luijendijk
 output: html_document
 date: "2023-05-25"
 ---
@@ -9,6 +10,9 @@ library(readxl)
 library(tidyverse)
 library(gdata)
 library(car)
+library(cowplot)
+library(magick)
+library(here)
 ```
 
 The first step is to load in the data from the Excel file and combine it with the metadata.
@@ -93,9 +97,66 @@ t.test(formula = data_salted$Length_dif ~ data_salted$Size,
 wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and small salted plants.
 ```
 
+The data can be plotted, where it's visualized how little difference there is:
+
+```{r, fig.width = 10, fig.cap = "Figure 1: Bar graphs showing A) the increase in longest leaf length grouped by population size, B) the increase in number of leaves grouped by population size, and C) the increase in number of leaves grouped by treatment, with error bars depicting 1 standard deviation."}
+summary_salted <- data_salted %>%
+  group_by(Size) %>%
+  summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
+            mean_lengthleaves.increase = mean(Length_dif, na.rm = TRUE),
+            mean_wetweight = mean(Wet_weight, na.rm = TRUE),
+            stdevlengthleave.increase = sd(Length_dif, na.rm = TRUE),
+            stdevwetweight = sd(Wet_weight, na.rm = TRUE),
+            stdevNumber = sd(Number_dif, na.rm = TRUE))
+
+plot_length <- summary_salted %>% #plot the increase in longest leaf length grouped by population size
+  ggplot(aes(x = Size, y = mean_lengthleaves.increase))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
+                    ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean increase in the length\nof the longest leaf in cm")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_noleaves <- summary_salted %>% #plot the increase in number of leaves grouped by population size
+  ggplot(aes(x = Size, y = mean_noleaves.increase))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber, ymax = mean_noleaves.increase + stdevNumber), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean increase in the number of leaves")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grouped by treatment
+  ggplot(aes(x = Size, y = mean_wetweight))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight, ymax = mean_wetweight + stdevwetweight), width=.2)+
+  theme_light()+
+  labs(title = "Wet weight of the plants,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean wet weight in grams")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 3 plots into 1 figure
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
+```
+
 Different types of phenotypes were scored, like the color and shape of the leaves. These scores can be visualized as well:
 
-```{r}
+```{r, fig.width = 10, fig.cap = "Figure 2: Bar graphs and an image showing A) the number of leaves of each color, grouped by treatment, B) the picture showing which shape is equal to which number, C) the number of leaves of each shape, grouped by treatment and D), the number of leaves of each shape, grouped by population size."}
 data_color <- data_complete %>% #prepare color data for plotting
   mutate(Color_graph = case_when(
     Color == 1 ~ "Green",
@@ -103,7 +164,7 @@ data_color <- data_complete %>% #prepare color data for plotting
     Color == 3 ~ "Red",
     Color == 4 ~ "Red and\nyellow"))
 
-plot_color <- data_color %>% #plot number of leaves of each color, grouped by treatment
+plot_color <- data_color %>% #plot the number of leaves of each color, grouped by treatment
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light()+
@@ -111,7 +172,7 @@ plot_color <- data_color %>% #plot number of leaves of each color, grouped by tr
        x="Color",
        y="Count")
 
-plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, grouped by treatment
+plot_shape_salt <- data_complete %>% #plot the number of leaves of each shape, grouped by treatment
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +
@@ -119,7 +180,7 @@ plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, group
        x="Leaf shape",
        y="Countt")
 
-plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, grouped by population size
+plot_shape_pop <- data_complete %>% #plot the number of leaves of each shape, grouped by population size
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +

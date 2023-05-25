@@ -53,7 +53,7 @@ t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment,
 summary <- data_complete %>%
   group_by(Treatment) %>%
   summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
-            mean_lengthleave.increase = mean(Length_dif, na.rm = TRUE),
+            mean_lengthleaf.increase = mean(Length_dif, na.rm = TRUE),
             mean_wetweight = mean(Wet_weight, na.rm = TRUE),
             stdevNumber = sd(Number_dif, na.rm = TRUE))
 
@@ -71,17 +71,58 @@ t.test(formula = data_salted$Length_dif ~ data_salted$Size,
 
 wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and smal salted plants.
 
-summary %>% #plot the increase in number of leaves grouped by treatment
-  ggplot()+
-  geom_col(aes(x = Treatment, y = mean_noleaves.increase, fill = Treatment))+
-  geom_errorbar(aes(ymin = mean_noleaves.increase-stdevNumber, ymax = mean_noleaves.increase+stdevNumber), width=.2)+
-  theme_light()+
-  labs(title = "Increase of number of leaves,\ngrouped by treatment",
-       subtitle = "errorbars depict 1 standard deviation",
-       x="Treatment",
-       y="Mean increase in the number of leaves")+
-  theme(legend.position = "none", text = element_text(size=16))
+summary_salted <- data_salted %>%
+  group_by(Size) %>%
+  summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
+            mean_lengthleaves.increase = mean(Length_dif, na.rm = TRUE),
+            mean_wetweight = mean(Wet_weight, na.rm = TRUE),
+            stdevlengthleave.increase = sd(Length_dif, na.rm = TRUE),
+            stdevwetweight = sd(Wet_weight, na.rm = TRUE),
+            stdevNumber = sd(Number_dif, na.rm = TRUE))
 
+plot_length <- summary_salted %>% #plot the increase in longest leaf length grouped by population size
+  ggplot(aes(x = Size, y = mean_lengthleaves.increase))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
+                    ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean increase in the length\nof the longest leaf in cm")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_noleaves <- summary_salted %>% #plot the increase in number of leaves grouped by population size
+  ggplot(aes(x = Size, y = mean_noleaves.increase))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber, ymax = mean_noleaves.increase + stdevNumber), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean increase in the number of leaves")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grouped by treatment
+  ggplot(aes(x = Size, y = mean_wetweight))+
+  geom_col(aes(fill = Size))+
+  geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight, ymax = mean_wetweight + stdevwetweight), width=.2)+
+  theme_light()+
+  labs(title = "Wet weight of the plants,\ngrouped by population size",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population size",
+       y="Mean wet weight in grams")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))
+
+plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 3 plots into 1 figure
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
 
 data_color <- data_complete %>% #prepare color data for plotting
   mutate(Color_graph = case_when(
@@ -116,6 +157,6 @@ plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, groupe
 
 img_leafshapes <- image_read(here("images/leaf_shapes.png")) %>% image_ggplot() #import the picture showing the different leaf shapes
 
-plot_grid(plot_color, img_leafshapes, plot_shape_salt, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1
+plot_grid(plot_color, img_leafshapes, plot_shape_salt, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1 figure
           labels = c("A", "B", "C", "D"),
           ncol = 2, nrow = 2)
