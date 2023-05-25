@@ -1,8 +1,19 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-05-25"
+---
+
+```{r setup, results='hide', message=FALSE}
 library(readxl)
 library(tidyverse)
 library(gdata)
 library(car)
+```
 
+The first step is to load in the data from the Excel file and combine it with the metadata.
+
+```{r}
 data_raw <- read_excel("data/arabidopsis_data.xlsx", col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
 metadata <- tibble("Group" = c("L1", "L2", "S3", "S4", "L5", "L6", "S7", "S8"),
@@ -20,7 +31,11 @@ data <- mutate(data_raw,
                "Number_dif" = data_raw$Number_leaves_a - data_raw$Number_leaves_b) #calculating differences between before and after treatment
 
 data_complete <- left_join(data, metadata, by = "Group") #create one complete dataframe
+```
 
+Now to begin the data analysis, the Shapiro-Wilk values of each group are calculated too see whether the values are normally distributed.
+
+```{r, warning=FALSE, message=FALSE, results='hide'}
 names <- c("Wet_weight", "Length_dif", "Number_dif") #collect the names of the columns of interest
 
 sw_results <- vector("list", 3) #prepare an empty list
@@ -35,36 +50,45 @@ merged <- sw_results %>% reduce(full_join, by= "Treatment") #merge all the dataf
 
 tidy_sw_results <- pivot_longer(data = merged, cols = names,  
                              names_to = "Info",  values_to = "ShapiroWilk_p.value") #make the dataframe tidy
+```
 
+```{r}
 tidy_sw_results %>% filter(ShapiroWilk_p.value > 0.05) #filter for which groups are normally distributed
 tidy_sw_results %>% filter(ShapiroWilk_p.value < 0.05) #filter for which groups are NOT normally distributed
+```
 
-#All groups of interest are normally distributed, except for the difference in number of leaves
+All groups of interest are normally distributed, except for the difference in number of leaves
 
+To check whether there is a difference between the wet weights and growth (difference in length of the longest leaf) between the salted and unsalted groups, a t-test is used after checking for equal variance:
+
+```{r}
 leveneTest(data_complete$Wet_weight ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4168, which means equal variance
-leveneTest(data_complete$Length_dif ~ Size*Treatment, data = data_complete) #Pr(>F) = 0.5969, which means equal variance
+leveneTest(data_complete$Length_dif ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4793, which means equal variance
 
 t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment, 
        paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistical significant difference between the salted and unsalted plants.
 
-summary <- data_complete %>%
+data_complete %>%
   group_by(Treatment) %>%
   summarize(mean_leaves.increase = mean(Number_dif, na.rm=TRUE), stdev=sd(Number_dif, na.rm=TRUE))
+```
 
+Zooming in, the large population-salted and small population-salted groups will be compared using a t-test for the wet weight and length-increase and a Wilcoxon test for the increase in number of leaves (as this group's values were not normally distributed):
 
-
+```{r, warning=FALSE}
 data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Wet_weight ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.3754 which means equal variance
 
 t.test(formula = data_salted$Wet_weight ~ data_salted$Size, 
-       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistical significant difference in wet weight between the large and small salted plants.
-
-
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistical significant difference between the large and small salted plants.
 
 data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Length_dif ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.7135 which means equal variance
 
 t.test(formula = data_salted$Length_dif ~ data_salted$Size, 
-       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistical significant difference between the difference in length of the longest leaf of the large and small salted plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistical significant difference between the large and small salted plants.
 
-wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and smal salted plants.
+wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and small salted plants.
+```
+
+
