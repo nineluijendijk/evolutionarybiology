@@ -462,9 +462,7 @@ leveneTest(data_salted$Length_dif ~ as.factor(Size), data = data_salted) #Pr(&gt
 <pre class="r"><code>t.test(formula = data_salted$Length_dif ~ data_salted$Size, 
        paired = FALSE, var.equal = TRUE)$p.value %&gt;% round(.,3) #t-test, p = 0.563, which means there is no statistical significant difference between the large and small salted plants.</code></pre>
 <pre><code>## [1] 0.563</code></pre>
-<pre class="r"><code>wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and smal salted plants.</code></pre>
-<pre><code>## Warning in wilcox.test.default(x = DATA[[1L]], y = DATA[[2L]], ...): cannot
-## compute exact p-value with ties</code></pre>
+<pre class="r"><code>wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and small salted plants.</code></pre>
 <pre><code>## 
 ##  Wilcoxon rank sum test with continuity correction
 ## 

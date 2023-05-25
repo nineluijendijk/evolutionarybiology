@@ -68,9 +68,11 @@ leveneTest(data_complete$Length_dif ~ as.factor(Treatment), data = data_complete
 t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment, 
        paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistical significant difference between the salted and unsalted plants.
 
-data_complete %>%
-  group_by(Treatment) %>%
-  summarize(mean_leaves.increase = mean(Number_dif, na.rm=TRUE), stdev=sd(Number_dif, na.rm=TRUE))
+data_complete %>% group_by(Treatment) %>%
+  summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
+            mean_lengthleave.increase = mean(Length_dif, na.rm = TRUE),
+            mean_wetweight = mean(Wet_weight, na.rm = TRUE),
+            stdev=sd(Number_dif, na.rm = TRUE))
 ```
 
 Zooming in, the large population-salted and small population-salted groups will be compared using a t-test for the wet weight and length-increase and a Wilcoxon test for the increase in number of leaves (as this group's values were not normally distributed):
@@ -91,4 +93,44 @@ t.test(formula = data_salted$Length_dif ~ data_salted$Size,
 wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and small salted plants.
 ```
 
+Different types of phenotypes were scored, like the color and shape of the leaves. These scores can be visualized as well:
+
+```{r}
+data_color <- data_complete %>% #prepare color data for plotting
+  mutate(Color_graph = case_when(
+    Color == 1 ~ "Green",
+    Color == 2 ~ "Yellow",
+    Color == 3 ~ "Red",
+    Color == 4 ~ "Red and\nyellow"))
+
+plot_color <- data_color %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(title = "Number of leaves of each color,\ngrouped by treatment",
+       x="Color",
+       y="Count")
+
+plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light() +
+  labs(title = "Number of leaves of each shape,\ngrouped by treatment",
+       x="Leaf shape",
+       y="Countt")
+
+plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, grouped by population size
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light() +
+  labs(title = "Number of leaves of each shape,\ngrouped by population size",
+       x="Leaf shape",
+       y="Countt")
+
+img_leafshapes <- image_read(here("images/leaf_shapes.png")) %>% image_ggplot() #import the picture showing the different leaf shapes
+
+plot_grid(plot_color, img_leafshapes, plot_shape_salt, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1
+          labels = c("A", "B", "C", "D"),
+          ncol = 2, nrow = 2)
+```
 
