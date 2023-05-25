@@ -1,7 +1,7 @@
 library(readxl)
 library(tidyverse)
 library(gdata)
-install.packages("gdata")
+library(car)
 
 data_raw <- read_excel("data/arabidopsis_data.xlsx", col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
@@ -15,21 +15,25 @@ metadata <- tibble("Group" = c("L1", "L2", "S3", "S4", "L5", "L6", "S7", "S8"),
        "Conc_unit" = rep("mM", each = 8))
 
 data <- mutate(data_raw,
-               "Length_dif" = data$Length_longest_leaf_a - data$Length_longest_leaf_b,
-               "Number_dif" = data$Number_leaves_a - data$Number_leaves_b) #calculating differences between before and after treatment
+               "Length_dif" = data_raw$Length_longest_leaf_a - data_raw$Length_longest_leaf_b,
+               "Number_dif" = data_raw$Number_leaves_a - data_raw$Number_leaves_b) #calculating differences between before and after treatment
 
-data_complete <- left_join(data, metadata, by = "Group")
+data_complete <- left_join(data, metadata, by = "Group") #create one complete dataframe
 
-names <- c("Length_longest_leaf_b", "Number_leaves_b", "Number_leaves_a", "Length_longest_leaf_a",  "Wet_weight", "Length_dif", "Number_dif")
+names <- c("Length_longest_leaf_b", "Number_leaves_b", "Number_leaves_a", "Length_longest_leaf_a",  "Wet_weight", "Length_dif", "Number_dif") #collect the names of the columns of interest
 
-sw_results <- vector("list", 7)
+sw_results <- vector("list", 7) #prepare an empty list
 
-for (i in 1:7) {
-result <- data_complete %>% group_by(Size) %>% summarize(sw = shapiro.test(!!sym(names[i]))$p.value) %>% rename.vars(to = paste0(names[i], "P.value_sw"), from ="sw")
+for (i in 1:7) { #create a list of dataframes where every dataframe contains its Shapiro-Wilk p-values
+result <- data_complete %>% group_by(Size) %>% summarize(sw = shapiro.test(!!sym(names[i]))$p.value) %>% rename.vars(to = names[i], from ="sw")
  sw_results[[i]] <- result
 }
 
-#Finding which groups aren't normally distributed
-data_complete %>% group_by(Size) %>% summarize(p.value_sw = shapiro.test(Wet_weight)$p.value) %>% filter(p.value_sw < 0.05)
+merged <- sw_results %>% reduce(full_join, by= "Size") #merge all the dataframes from the list
+
+tidy_sw_results <- pivot_longer(data = merged, cols = names,  
+                             names_to = "Info",  values_to = "Shapiro-Wilk_p.value") #make the dataframe tidy
+
+tidy_sw_results %>% filter(`Shapiro-Wilk_p.value` > 0.05) #filter for which groups are normally distributed
 
 
