@@ -16,7 +16,9 @@ metadata <- tibble("Group" = c("L1", "L2", "S3", "S4", "L5", "L6", "S7", "S8"),
        "Soil" = rep(c("Riverbed", "Riverbed", "Scree", "Rocks"), each = 2),
        "Treatment" = c("Unsalted", "Salted", "Unsalted", "Salted", "Unsalted", "Salted", "Unsalted", "Salted"),
        "Conc_NaCl" = c(0, 50, 0, 50, 0, 50, 0, 50),
-       "Conc_unit" = rep("mM", each = 8))
+       "Conc_unit" = rep("mM", each = 8),
+       "Length_unit" = rep("cm", each = 8),
+       "Weight_unit" = rep("grams"), each = 8)
 
 data <- mutate(data_raw,
                "Length_dif" = data_raw$Length_longest_leaf_a - data_raw$Length_longest_leaf_b,
@@ -86,18 +88,19 @@ plot_length <- summary_salted %>% #plot the increase in longest leaf length grou
   geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
                     ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
   theme_light()+
-  labs(title = "Increase in number of leaves,\ngrouped by population size",
+  labs(title = "Increase in length of the longest\nleaf, grouped by population",
        subtitle = "Error bars depict 1 standard deviation",
        x="Population size",
        y="Mean increase in the length\nof the longest leaf in cm")+
-  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))+
   scale_fill_manual(values=c("#e457b5", "#57e486"))
 
-plot_noleaves <- summary_salted %>% #plot the increase in number of leaves grouped by population size
+plot_noleaves <- summary_salted %>% #plot the increase in number of leaves grouped by population
   ggplot(aes(x = Size, y = mean_noleaves.increase))+
   geom_col(aes(fill = Size))+
-  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber, ymax = mean_noleaves.increase + stdevNumber), width=.2)+
+  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
+                    ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
   labs(title = "Increase in number of leaves,\ngrouped by population size",
        subtitle = "Error bars depict 1 standard deviation",
@@ -107,10 +110,11 @@ plot_noleaves <- summary_salted %>% #plot the increase in number of leaves group
         plot.subtitle = element_text(size=12))+
   scale_fill_manual(values=c("#e457b5", "#57e486"))
 
-plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grouped by treatment
+plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grouped by population
   ggplot(aes(x = Size, y = mean_wetweight))+
   geom_col(aes(fill = Size))+
-  geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight, ymax = mean_wetweight + stdevwetweight), width=.2)+
+  geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight,
+                    ymax = mean_wetweight + stdevwetweight), width=.2)+
   theme_light()+
   labs(title = "Wet weight of the plants,\ngrouped by population size",
        subtitle = "Error bars depict 1 standard deviation",
@@ -120,9 +124,90 @@ plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grou
         plot.subtitle = element_text(size=12))+
   scale_fill_manual(values=c("#e457b5", "#57e486"))
 
-plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 3 plots into 1 figure
+plotgrid1 <- plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 3 plots into 1 figure
           labels = c("A", "B", "C"),
           ncol = 3, nrow = 1)
+
+plotgrid1
+
+data_complete %>%
+  group_by(Population) %>%
+  summarise(ShapiroWilk_p.value = shapiro.test(Length_dif)$p.value) #Shapiro-Wilk test, all p-values are larger than 0.05
+
+data_complete %>%
+  group_by(Population) %>%
+  summarise(ShapiroWilk_p.value = shapiro.test(Wet_weight)$p.value) #Shapiro-Wilk test, all p-values are larger than 0.05
+
+data_complete %>%
+  group_by(Population) %>%
+  summarise(ShapiroWilk_p.value = shapiro.test(Number_dif)$p.value) #Shapiro-Wilk test, one of the p-values is lower than 0.05
+
+leveneTest(data_complete$Length_dif ~ as.factor(Population), data = data_complete) #Pr(>F) = 0.5092, which means equal variance
+
+leveneTest(data_complete$Wet_weight ~ as.factor(Population), data = data_complete) #Pr(>F) = 0.5227, which means equal variance
+
+aov(Length_dif ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.0635
+
+aov(Wet_weight ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.397
+
+kruskal.test(Number_dif ~ Population, data = data_complete) #Kruskal-Wallis test, p = 0.0002492
+
+summary_complete_pop <- data_complete %>%
+  group_by(Population) %>%
+  summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
+            mean_lengthleaves.increase = mean(Length_dif, na.rm = TRUE),
+            mean_wetweight = mean(Wet_weight, na.rm = TRUE),
+            stdevlengthleave.increase = sd(Length_dif, na.rm = TRUE),
+            stdevwetweight = sd(Wet_weight, na.rm = TRUE),
+            stdevNumber = sd(Number_dif, na.rm = TRUE))
+
+plot_length2 <- summary_complete_pop %>% #plot the increase in longest leaf length grouped by population
+  ggplot(aes(x = Population, y = mean_lengthleaves.increase))+
+  geom_col(aes(fill = Population), color = c("#e457b5", "#e457b5", "#57e486", "#57e486"), linewidth = 2)+
+  geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
+                    ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
+  theme_light()+
+  labs(title = "Increase in length of the longest\nleaf, grouped by population",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population",
+       y="Mean increase in the length\nof the longest leaf in cm")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))
+
+plot_noleaves2 <- summary_complete_pop %>% #plot the increase in number of leaves grouped by population
+  ggplot(aes(x = Population, y = mean_noleaves.increase))+
+  geom_col(aes(fill = Population), color = c("#e457b5", "#e457b5", "#57e486", "#57e486"), linewidth = 2)+
+  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
+                    ymax = mean_noleaves.increase + stdevNumber), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by population",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population",
+       y="Mean increase in the number of leaves")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))
+
+plot_wetweight2 <- summary_complete_pop %>% #plot the increase in number of leaves grouped by population
+  ggplot(aes(x = Population, y = mean_wetweight))+
+  geom_col(aes(fill = Population), color = c("#e457b5", "#e457b5", "#57e486", "#57e486"), linewidth = 2)+
+  geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight,
+                    ymax = mean_wetweight + stdevwetweight), width=.2)+
+  theme_light()+
+  labs(title = "Wet weight of the plants,\ngrouped by population",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Population",
+       y="Mean wet weight in grams")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
+        plot.subtitle = element_text(size=12))+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))
+
+plotgrid2 <- plot_grid(plot_length2, plot_wetweight2, plot_noleaves2, #combine the 3 plots into 1 figure
+          labels = c("A", "B", "C"),
+          ncol = 3, nrow = 1)
+
+plotgrid2
 
 data_color <- data_complete %>% #prepare color data for plotting
   mutate(Color_graph = case_when(
@@ -137,7 +222,19 @@ plot_color <- data_color %>% #plot number of leaves of each color, grouped by tr
   theme_light()+
   labs(title = "Number of leaves of each color,\ngrouped by treatment",
        x="Color",
+       y="Count")
+
+plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(title = "Number of leaves of each color,\ngrouped by population",
+       x="Color",
        y="Count")+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))
 
 plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, grouped by treatment
   ggplot()+ 
@@ -147,7 +244,7 @@ plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, group
        x="Leaf shape",
        y="Count")
 
-plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, grouped by population size
+plot_shape_popsize <- data_complete %>% #plot number of leaves of each shape, grouped by population size
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +
@@ -157,8 +254,22 @@ plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, groupe
   scale_fill_manual(values=c("#e457b5", "#57e486"))+
   guides(fill=guide_legend(title="Population size"))
 
+plot_shape_pop <- data_complete %>% #plot number of leaves of each shape, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Population, color = Size), linewidth = 2,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light() +
+  labs(title = "Number of leaves of each shape,\ngrouped by population",
+       x="Leaf shape",
+       y="Count")+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))
+
 img_leafshapes <- image_read(here("images/leaf_shapes.png")) %>% image_ggplot() #import the picture showing the different leaf shapes
 
-plot_grid(plot_color, img_leafshapes, plot_shape_salt, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1 figure
-          labels = c("A", "B", "C", "D"),
-          ncol = 2, nrow = 2)
+plotgrid3 <- plot_grid(plot_color, plot_color2, plot_shape_salt, img_leafshapes, plot_shape_popsize, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1 figure
+          labels = c("A", "B", "C", "D", "E", "F"),
+          ncol =2, nrow = 3)
+
+plotgrid3

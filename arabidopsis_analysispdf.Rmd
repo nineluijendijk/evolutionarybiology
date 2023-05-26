@@ -1,11 +1,9 @@
 ---
 title: "Data analysis of Arabidopsis experiment B1"
 author: Nine Luijendijk
-output: html_document
+output: pdf_document
 date: "2023-05-26"
 ---
- <details>
- <summary>Loading the packages</summary>
  
 ```{r setup, results='hide', message=FALSE}
 library(readxl)
@@ -16,12 +14,8 @@ library(cowplot)
 library(magick)
 library(here)
 ```
-</details>
 
 The first step is to load in the data from the Excel file and combine it with the metadata.
-
-<details>
-<summary>Loading file and generating complete dataframe</summary>
 
 ```{r loading_data}
 data_raw <- read_excel("data/arabidopsis_data.xlsx", col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
@@ -44,7 +38,6 @@ data <- mutate(data_raw,
 
 data_complete <- left_join(data, metadata, by = "Group") #create one complete dataframe
 ```
-</details>
 
 Now to begin the data analysis, the Shapiro-Wilk values of each group are calculated too see whether the values are normally distributed.
 
@@ -105,8 +98,7 @@ wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, w
 ```
 
 The data can be plotted, where it's visualized how little difference there is:
- <details>
- <summary>Generating the figures</summary>
+
 ```{r plotting1}
 summary_salted <- data_salted %>%
   group_by(Size) %>%
@@ -164,8 +156,6 @@ plotgrid1 <- plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 
           ncol = 3, nrow = 1)
 ```
 
- </details>
-
 ```{r plot1, echo=FALSE, fig.width = 10.5, fig.cap = "Figure 1: Bar graphs showing A) the increase in longest leaf length grouped by population size, B) the increase in number of leaves grouped by population size, and C) the increase in number of leaves grouped by population size, with error bars depicting 1 standard deviation."}
 plotgrid1
 ```
@@ -206,9 +196,6 @@ summary_complete_pop <- data_complete %>%
 ```
 
 And again, these can be plotted:
-
- <details>
- <summary>Plotting more figures</summary>
 
 ```{r plotting2}
 plot_length2 <- summary_complete_pop %>% #plot the increase in longest leaf length grouped by population
@@ -258,16 +245,11 @@ plotgrid2 <- plot_grid(plot_length2, plot_wetweight2, plot_noleaves2, #combine t
           ncol = 3, nrow = 1)
 ```
  
- </details>
-
 ```{r plot2, echo=FALSE, fig.width = 10.5, fig.cap = "Figure 2: Bar graphs showing A) the increase in longest leaf length grouped by population, B) the increase in number of leaves grouped by population, and C) the increase in number of leaves grouped by population, with error bars depicting 1 standard deviation and the bar borders showing wether the population is large (pink) or small (green)."}
 plotgrid2
 ```
 
 Different types of phenotypes were scored, like the color and shape of the leaves. These scores can be visualized as well:
-
- <details>
- <summary>Generating even more figures</summary>
 
 ```{r plotting3}
 data_color <- data_complete %>% #prepare color data for plotting
@@ -333,8 +315,6 @@ plotgrid3 <- plot_grid(plot_color, plot_color2, plot_shape_salt, img_leafshapes,
           labels = c("A", "B", "C", "D", "E", "F"),
           ncol =2, nrow = 3)
 ```
- 
- </details>
  
 ```{r plot3, echo=FALSE, fig.height = 13, fig.width = 10.5, fig.cap = "Figure 3: Bar graphs and an image showing A) the number of leaves of each color, grouped by treatment, B) the number of leaves of each color, grouped by population, C) the number of leaves of each shape, grouped by treatment D) the picture showing which shape is equal to which number, E) the number of leaves of each shape, grouped by population size, and F) the number of leaves of each shape, grouped by population."}
 plotgrid3
