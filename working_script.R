@@ -49,29 +49,79 @@ tidy_sw_results %>% filter(ShapiroWilk_p.value < 0.05) #filter for which groups 
 leveneTest(data_complete$Wet_weight ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4168, which means equal variance
 leveneTest(data_complete$Length_dif ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4793, which means equal variance
 
+t.test(formula = data_complete$Length_dif ~ data_complete$Treatment, 
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.005, which means there is a statistically significant difference in increase in longest leaf length between the salted and unsalted plants.
+
 t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment, 
-       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistical significant difference between the salted and unsalted plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistically significant difference in wet weight between the salted and unsalted plants.
+
+wilcox.test(Number_dif ~ Treatment, data = data_complete) #Wilcoxon test, p = 0.5845, which means there is no statistically significant difference between the difference in number of leaves of the salted and unsalted plants.
 
 summary <- data_complete %>%
   group_by(Treatment) %>%
   summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
             mean_lengthleaf.increase = mean(Length_dif, na.rm = TRUE),
             mean_wetweight = mean(Wet_weight, na.rm = TRUE),
+            stdevLength = sd(Length_dif, na.rm = TRUE),
+            stdevWetweight = sd(Wet_weight, na.rm = TRUE),
             stdevNumber = sd(Number_dif, na.rm = TRUE))
+
+plot_lengthdiffull <- summary %>% #plot the increase in longest leaf length grouped by population size
+  ggplot(aes(x = Treatment, y = mean_lengthleaf.increase))+
+  geom_col(aes(fill = Treatment))+
+  geom_errorbar(aes(ymin = mean_lengthleaf.increase - stdevLength,
+                    ymax = mean_lengthleaf.increase + stdevLength), width=.2)+
+  theme_light()+
+  labs(title = "Increase in length of the longest\nleaf, grouped by treatment",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Treatment",
+       y="Mean increase in the length\nof the longest leaf in cm")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
+        plot.subtitle = element_text(size=12))
+
+plot_wetweightfull <- summary %>% #plot the wet weight grouped by population size
+  ggplot(aes(x = Treatment, y = mean_wetweight))+
+  geom_col(aes(fill = Treatment))+
+  geom_errorbar(aes(ymin = mean_wetweight - stdevWetweight,
+                    ymax = mean_wetweight + stdevWetweight), width=.2)+
+  theme_light()+
+  labs(title = "Wet weight, grouped by treatment",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Treatment",
+       y="Wet weight in grams")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
+        plot.subtitle = element_text(size=12))
+
+plot_numberdiffull <- summary %>% #plot the increase in number of leaves grouped by population size
+  ggplot(aes(x = Treatment, y = mean_noleaves.increase))+
+  geom_col(aes(fill = Treatment))+
+  geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
+                    ymax = mean_noleaves.increase + stdevNumber), width=.2)+
+  theme_light()+
+  labs(title = "Increase in number of leaves,\ngrouped by treatment",
+       subtitle = "Error bars depict 1 standard deviation",
+       x="Treatment",
+       y="Mean increase in the number of leaves")+
+  theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
+        plot.subtitle = element_text(size=12))
+
+plotgrid0 <- plot_grid(plot_lengthdiffull, plot_wetweightfull, plot_numberdiffull, #combine the 3 plots into 1 figure
+                       labels = c("A", "B", "C"),
+                       ncol = 3, nrow = 1)
 
 data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Wet_weight ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.3754 which means equal variance
 
 t.test(formula = data_salted$Wet_weight ~ data_salted$Size, 
-       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistical significant difference in wet weight between the large and small salted plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistically significant difference in wet weight between the large and small salted plants.
 
 data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Length_dif ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.7135 which means equal variance
 
 t.test(formula = data_salted$Length_dif ~ data_salted$Size, 
-       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistical significant difference between the difference in length of the longest leaf of the large and small salted plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistically significant difference between the difference in length of the longest leaf of the large and small salted plants.
 
-wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistical significant difference between the difference in number of leaves of the large and smal salted plants.
+wilcox.test(Number_dif ~ Size, data = data_salted) #Wilcoxon test, p = 0.4735, which means there is no statistically significant difference between the difference in number of leaves of the large and smal salted plants.
 
 summary_salted <- data_salted %>%
   group_by(Size) %>%
@@ -146,11 +196,11 @@ leveneTest(data_complete$Length_dif ~ as.factor(Population), data = data_complet
 
 leveneTest(data_complete$Wet_weight ~ as.factor(Population), data = data_complete) #Pr(>F) = 0.5227, which means equal variance
 
-aov(Length_dif ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.0635
+aov(Length_dif ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.0635, which means there is no statistically significant difference
 
-aov(Wet_weight ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.397
+aov(Wet_weight ~ Population, data_complete) %>% summary.aov() #Pr(>F) = 0.397, which means there is no statistically significant difference
 
-kruskal.test(Number_dif ~ Population, data = data_complete) #Kruskal-Wallis test, p = 0.0002492
+kruskal.test(Number_dif ~ Population, data = data_complete) #Kruskal-Wallis test, p = 0.0002492, which means there is a statistically significant difference
 
 summary_complete_pop <- data_complete %>%
   group_by(Population) %>%
