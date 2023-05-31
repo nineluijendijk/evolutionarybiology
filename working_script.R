@@ -117,7 +117,6 @@ leveneTest(data_salted$Wet_weight ~ as.factor(Size), data = data_salted) #Pr(>F)
 t.test(formula = data_salted$Wet_weight ~ data_salted$Size, 
        paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistically significant difference in wet weight between the large and small salted plants.
 
-data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Length_dif ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.7135 which means equal variance
 
 t.test(formula = data_salted$Length_dif ~ data_salted$Size, 
