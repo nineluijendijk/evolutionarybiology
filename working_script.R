@@ -109,6 +109,8 @@ plotgrid0 <- plot_grid(plot_lengthdiffull, plot_wetweightfull, plot_numberdifful
                        labels = c("A", "B", "C"),
                        ncol = 3, nrow = 1)
 
+plotgrid0
+
 data_salted <- subset(data_complete, Treatment == "Salted")
 leveneTest(data_salted$Wet_weight ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.3754 which means equal variance
 
@@ -139,7 +141,7 @@ plot_length <- summary_salted %>% #plot the increase in longest leaf length grou
                     ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
   theme_light()+
   labs(title = "Increase in length of the longest\nleaf, grouped by population",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean increase in the length\nof the longest leaf in cm")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
@@ -153,7 +155,7 @@ plot_noleaves <- summary_salted %>% #plot the increase in number of leaves group
                     ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
   labs(title = "Increase in number of leaves,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean increase in the number of leaves")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
@@ -167,7 +169,7 @@ plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grou
                     ymax = mean_wetweight + stdevwetweight), width=.2)+
   theme_light()+
   labs(title = "Wet weight of the plants,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),

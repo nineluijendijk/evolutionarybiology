@@ -85,7 +85,7 @@ t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment,
 wilcox.test(Number_dif ~ Treatment, data = data_complete) #Wilcoxon test, p = 0.5845, which means there is no statistically significant difference between the difference in number of leaves of the salted and unsalted plants.
 ```
 
-These differences are interesting to visualize as they statistically significant:
+These differences are interesting to visualize as they are statistically significant:
 
 <details>
 <summary>Generating the first plots</summary>
@@ -189,7 +189,7 @@ plot_length <- summary_salted %>% #plot the increase in longest leaf length grou
                     ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
   theme_light()+
   labs(title = "Increase in length of the longest\nleaf, grouped by population",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean increase in the length\nof the longest leaf in cm")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
@@ -203,7 +203,7 @@ plot_noleaves <- summary_salted %>% #plot the increase in number of leaves group
                     ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
   labs(title = "Increase in number of leaves,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean increase in the number of leaves")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
@@ -217,7 +217,7 @@ plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grou
                     ymax = mean_wetweight + stdevwetweight), width=.2)+
   theme_light()+
   labs(title = "Wet weight of the plants,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation",
+       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted plants",
        x="Population size",
        y="Mean wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
@@ -231,7 +231,7 @@ plotgrid1 <- plot_grid(plot_length, plot_wetweight, plot_noleaves, #combine the 
 
  </details>
 
-```{r plot1, echo=FALSE, fig.width = 10.5, fig.cap = "Figure 2: Bar graphs showing A) the increase in longest leaf length grouped by population size, B) the increase in number of leaves grouped by population size, and C) the increase in number of leaves grouped by population size, with error bars depicting 1 standard deviation."}
+```{r plot1, echo=FALSE, fig.width = 10.5, fig.cap = "Figure 2: Bar graphs showing A) the increase in longest leaf length grouped by population size, B) the increase in number of leaves grouped by population size, and C) the increase in number of leaves grouped by population size, with error bars depicting 1 standard deviation, and the data filtered to only show the salted groups."}
 plotgrid1
 ```
 
