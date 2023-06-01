@@ -106,9 +106,7 @@ plot_lengthdiffull <- summary %>% #plot the increase in longest leaf length grou
   geom_errorbar(aes(ymin = mean_lengthleaf.increase - stdevLength,
                     ymax = mean_lengthleaf.increase + stdevLength), width=.2)+
   theme_light()+
-  labs(title = "Increase in length of the longest\nleaf, grouped by treatment",
-       subtitle = "Error bars depict 1 standard deviation",
-       x="Treatment",
+  labs(x="Treatment",
        y="Mean increase in the length\nof the longest leaf in cm")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))
@@ -119,9 +117,7 @@ plot_wetweightfull <- summary %>% #plot the wet weight grouped by population siz
   geom_errorbar(aes(ymin = mean_wetweight - stdevWetweight,
                     ymax = mean_wetweight + stdevWetweight), width=.2)+
   theme_light()+
-  labs(title = "Wet weight, grouped by treatment",
-       subtitle = "Error bars depict 1 standard deviation",
-       x="Treatment",
+  labs(x="Treatment",
        y="Wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))
@@ -132,9 +128,7 @@ plot_numberdiffull <- summary %>% #plot the increase in number of leaves grouped
   geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
                     ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
-  labs(title = "Increase in number of leaves,\ngrouped by treatment",
-       subtitle = "Error bars depict 1 standard deviation",
-       x="Treatment",
+  labs(x="Treatment",
        y="Mean increase in the number of leaves")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))
@@ -187,9 +181,7 @@ plot_length <- summary_salted %>% #plot the increase in longest leaf length grou
   geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
                     ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
   theme_light()+
-  labs(title = "Increase in length of the longest\nleaf, grouped by population",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population size",
+  labs(x="Population size",
        y="Mean increase in the length\nof the longest leaf in cm")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))+
@@ -201,9 +193,7 @@ plot_noleaves <- summary_salted %>% #plot the increase in number of leaves group
   geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
                     ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
-  labs(title = "Increase in number of leaves,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population size",
+  labs(x="Population size",
        y="Mean increase in the number of leaves")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
         plot.subtitle = element_text(size=12))+
@@ -215,9 +205,7 @@ plot_wetweight <- summary_salted %>% #plot the increase in number of leaves grou
   geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight,
                     ymax = mean_wetweight + stdevwetweight), width=.2)+
   theme_light()+
-  labs(title = "Wet weight of the plants,\ngrouped by population size",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population size",
+  labs(x="Population size",
        y="Mean wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
         plot.subtitle = element_text(size=12))+
@@ -281,9 +269,7 @@ plot_length2 <- summary_complete_pop %>% #plot the increase in longest leaf leng
   geom_errorbar(aes(ymin = mean_lengthleaves.increase - stdevlengthleave.increase,
                     ymax = mean_lengthleaves.increase + stdevlengthleave.increase), width=.2)+
   theme_light()+
-  labs(title = "Increase in length of the longest\nleaf, grouped by population",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population",
+  labs(x="Population",
        y="Mean increase in the length\nof the longest leaf in cm")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))+
@@ -295,9 +281,7 @@ plot_noleaves2 <- summary_complete_pop %>% #plot the increase in number of leave
   geom_errorbar(aes(ymin = mean_noleaves.increase - stdevNumber,
                     ymax = mean_noleaves.increase + stdevNumber), width=.2)+
   theme_light()+
-  labs(title = "Increase in number of leaves,\ngrouped by population",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population",
+  labs(x="Population",
        y="Mean increase in the number of leaves")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
         plot.subtitle = element_text(size=12))+
@@ -309,9 +293,7 @@ plot_wetweight2 <- summary_complete_pop %>% #plot the increase in number of leav
   geom_errorbar(aes(ymin = mean_wetweight - stdevwetweight,
                     ymax = mean_wetweight + stdevwetweight), width=.2)+
   theme_light()+
-  labs(title = "Wet weight of the plants,\ngrouped by population",
-       subtitle = "Error bars depict 1 standard deviation,\nplot only showing salted groups",
-       x="Population",
+  labs(x="Population",
        y="Mean wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=15),
         plot.subtitle = element_text(size=12))+
@@ -345,8 +327,7 @@ plot_color <- data_color %>% #plot number of leaves of each color, grouped by tr
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light()+
-  labs(title = "Number of leaves of each color,\ngrouped by treatment",
-       x="Color",
+  labs(x="Color",
        y="Count")
 
 plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by population
@@ -354,9 +335,7 @@ plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by p
   geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light()+
-  labs(title = "Number of leaves of each color,\ngrouped by population",
-       subtitle = "Plot only showing salted groups",
-       x="Color",
+  labs(x="Color",
        y="Count")+
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+
@@ -366,17 +345,14 @@ plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, group
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by treatment",
-       x="Leaf shape",
+  labs(x="Leaf shape",
        y="Count")
 
 plot_shape_popsize <- data_salted %>% #plot number of leaves of each shape, grouped by population size
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by population size",
-       subtitle = "Plot only showing salted groups",
-       x="Leaf shape",
+  labs(x="Leaf shape",
        y="Count")+
   scale_fill_manual(values=c("#e457b5", "#57e486"))+
   guides(fill=guide_legend(title="Population size"))
@@ -386,9 +362,7 @@ plot_shape_pop <- data_salted %>% #plot number of leaves of each shape, grouped 
   geom_bar(aes(x = Leaf_shape, fill = Population, color = Size), linewidth = 2,
            position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by population",
-       subtitle = "Plot only showing salted groups",
-       x="Leaf shape",
+  labs(x="Leaf shape",
        y="Count")+
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.4)  31 MAY 2023 18:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.4)  1 JUN 2023 14:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -518,76 +518,64 @@ File: arabidopsis_analysispdf_files/figure-latex/unnamed-chunk-1-1.pdf Graphic
 file (type pdf)
 <use arabidopsis_analysispdf_files/figure-latex/unnamed-chunk-1-1.pdf>
 Package pdftex.def Info: arabidopsis_analysispdf_files/figure-latex/unnamed-chu
-nk-1-1.pdf  used on input line 319.
+nk-1-1.pdf  used on input line 313.
 (pdftex.def)             Requested size: 469.75685pt x 197.09636pt.
 [3] [4 <./arabidopsis_analysispdf_files/figure-latex/unnamed-chunk-1-1.pdf>]
-Underfull \vbox (badness 10000) detected at line 457
- []
-
-
-Underfull \vbox (badness 10000) detected at line 457
- []
-
-[5]
-<arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf, id=42, 748.7975pt x 31
+<arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf, id=38, 748.7975pt x 31
 6.18124pt>
 File: arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf Graphic file (type
  pdf)
 <use arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf>
 Package pdftex.def Info: arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf
-  used on input line 461.
+  used on input line 449.
 (pdftex.def)             Requested size: 469.75685pt x 198.35576pt.
-[6 <./arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf>] [7]
+[5] [6 <./arabidopsis_analysispdf_files/figure-latex/plot1-1.pdf>]
+Overfull \vbox (2.01816pt too high) detected at line 639
+ []
+
+[7]
 <arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf, id=61, 748.7975pt x 31
-6.18124pt>
+8.18875pt>
 File: arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf Graphic file (type
  pdf)
 <use arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf>
 Package pdftex.def Info: arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf
-  used on input line 661.
-(pdftex.def)             Requested size: 469.75685pt x 198.35576pt.
-[8]
-Underfull \vbox (badness 10000) detected at line 743
- []
-
-
-Underfull \vbox (badness 10000) detected at line 743
- []
-
-[9 <./arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf>]
-<arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf, id=79, 753.81625pt x 9
+  used on input line 643.
+(pdftex.def)             Requested size: 469.75685pt x 199.61516pt.
+[8 <./arabidopsis_analysispdf_files/figure-latex/plot2-1.pdf>]
+<arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf, id=75, 753.81625pt x 9
 30.47626pt>
 File: arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf Graphic file (type
  pdf)
 <use arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf>
 Package pdftex.def Info: arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf
-  used on input line 747.
+  used on input line 721.
 (pdftex.def)             Requested size: 469.75374pt x 579.84248pt.
 
-LaTeX Warning: Float too large for page by 1.3569pt on input line 756.
+LaTeX Warning: Float too large for page by 1.3569pt on input line 730.
 
-[10] [11 <./arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf>] (./arabido
-psis_analysispdf.aux) ) 
+[9] [10 <./arabidopsis_analysispdf_files/figure-latex/plot3-1.pdf>] (./arabidop
+sis_analysispdf.aux) ) 
 Here is how much of TeX's memory you used:
- 13646 strings out of 478268
- 217661 string characters out of 5846347
- 569681 words of memory out of 5000000
+ 13645 strings out of 478268
+ 217654 string characters out of 5846347
+ 561058 words of memory out of 5000000
  31594 multiletter control sequences out of 15000+600000
  493239 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  74i,6n,77p,1020b,477s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/l
-m-ts1.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</us
-r/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/tex
-live/2022/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2022/t
-exmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2022/texmf-dist/f
-onts/type1/public/lm/lmtk10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1
-/public/lm/lmtt10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm
-/lmtti10.pfb>
-Output written on arabidopsis_analysispdf.pdf (11 pages, 1276676 bytes).
+{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm
+-ts1.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr
+/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texl
+ive/2022/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2022/te
+xmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2022/texmf-dist/fo
+nts/type1/public/lm/lmtk10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/
+public/lm/lmtt10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/
+lmtti10.pfb>
+Output written on arabidopsis_analysispdf.pdf (10 pages, 1275305 bytes).
 PDF statistics:
- 134 PDF objects out of 1000 (max. 8388607)
- 94 compressed objects within 1 object stream
- 16 named destinations out of 1000 (max. 500000)
+ 130 PDF objects out of 1000 (max. 8388607)
+ 91 compressed objects within 1 object stream
+ 15 named destinations out of 1000 (max. 500000)
  12309 words of extra memory for PDF output out of 14400 (max. 10000000)
 
