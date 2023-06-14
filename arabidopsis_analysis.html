@@ -369,7 +369,8 @@ library(gdata)
 library(car)
 library(cowplot)
 library(magick)
-library(here)</code></pre>
+library(here)
+library(FSA)</code></pre>
 </details>
 <p>The first step is to load in the data from the Excel file and combine
 it with the metadata.</p>
@@ -658,6 +659,19 @@ need to be looked at individually as well:</p>
 ## 
 ## data:  Number_dif by Population
 ## Kruskal-Wallis chi-squared = 8.9263, df = 3, p-value = 0.03029</code></pre>
+<pre class="r"><code>dunnTest(Number_dif ~ Population,
+         data=data_salted,
+         method=&quot;bonferroni&quot;) #only difference is between Bovra and Helin, adjusted p-value = 0.02389668</code></pre>
+<pre><code>## Warning: Population was coerced to a factor.</code></pre>
+<pre><code>## Dunn (1964) Kruskal-Wallis multiple comparison</code></pre>
+<pre><code>##   p-values adjusted with the Bonferroni method.</code></pre>
+<pre><code>##                Comparison          Z    P.unadj      P.adj
+## 1           Bovra - Helin -2.8795224 0.00398278 0.02389668
+## 2        Bovra - Smadalen -0.6810831 0.49581894 1.00000000
+## 3        Helin - Smadalen  2.0337567 0.04197613 0.25185679
+## 4    Bovra - Spiterstulen -1.0571673 0.29043523 1.00000000
+## 5    Helin - Spiterstulen  1.8223551 0.06840112 0.41040674
+## 6 Smadalen - Spiterstulen -0.3156239 0.75228803 1.00000000</code></pre>
 <pre class="r"><code>summary_complete_pop &lt;- data_salted %&gt;%
   group_by(Population) %&gt;%
   summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),

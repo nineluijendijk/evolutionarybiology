@@ -5,6 +5,7 @@ library(car)
 library(cowplot)
 library(magick)
 library(here)
+library(FSA)
 
 data_raw <- read_excel(here("data/arabidopsis_data.xlsx"), col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
@@ -203,6 +204,10 @@ aov(Wet_weight ~ Population, data_salted) %>% summary.aov() #Pr(>F) = 0.961, whi
 
 kruskal.test(Number_dif ~ Population, data = data_salted) #Kruskal-Wallis test, p = 0.03029, which means there is a statistically significant difference
 
+dunnTest(Number_dif ~ Population,
+         data=data_salted,
+         method="bonferroni") #only difference is between Bovra and Helin, adjusted p-value = 0.02389668
+
 summary_complete_pop <- data_salted %>%
   group_by(Population) %>%
   summarize(mean_noleaves.increase = mean(Number_dif, na.rm = TRUE),
@@ -327,3 +332,4 @@ plotgrid3 <- plot_grid(plot_color, plot_color2, plot_shape_salt, img_leafshapes,
           ncol = 2, nrow = 3)
 
 plotgrid3
+

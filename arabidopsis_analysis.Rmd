@@ -18,6 +18,7 @@ library(car)
 library(cowplot)
 library(magick)
 library(here)
+library(FSA)
 ```
 </details>
 
@@ -249,6 +250,10 @@ aov(Length_dif ~ Population, data_salted) %>% summary.aov() #Pr(>F) = 0.478, whi
 aov(Wet_weight ~ Population, data_salted) %>% summary.aov() #Pr(>F) = 0.961, which means there is no statistically significant difference
 
 kruskal.test(Number_dif ~ Population, data = data_salted) #Kruskal-Wallis test, p = 0.03029, which means there is a statistically significant difference
+
+dunnTest(Number_dif ~ Population,
+         data=data_salted,
+         method="bonferroni") #only difference is between Bovra and Helin, adjusted p-value = 0.02389668
 
 summary_complete_pop <- data_salted %>%
   group_by(Population) %>%
