@@ -7,6 +7,7 @@ library(magick)
 library(here)
 library(agricolae)
 library(ggsignif)
+library(scales)
 
 data_raw <- read_excel(here::here("data/arabidopsis_data.xlsx"), col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
@@ -367,45 +368,61 @@ plotgridcolor <- ggdraw(add_sub(plotgridcolor0, "Color", vpadding=grid::unit(0,"
 
 
 
+# ANALYZING SHAPE DIFFERENCE
 
-plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, grouped by treatment
+chi1 <- chisq.test(data_complete$Treatment, data_complete$Leaf_shape, correct=FALSE)$p.value %>% round(digits = 3) # p = 0.003
+chi2 <- chisq.test(data_salted$Size, data_salted$Leaf_shape, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.017
+chi3 <- chisq.test(data_salted$Population, data_salted$Leaf_shape, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.000
+
+plot_shape1 <- data_complete %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
-  theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by treatment",
-       x="Leaf shape",
-       y="Count")
+  theme_light()+
+  theme(legend.position = "none")+
+  labs(y="Count")+
+  xlab(NULL)+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi1))
 
-plot_shape_popsize <- data_salted %>% #plot number of leaves of each shape, grouped by population size
+plot_shape2 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
   geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
-  theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by population size",
-       subtitle = "Plot only showing high salinity groups",
-       x="Leaf shape",
-       y="Count")+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
   scale_fill_manual(values=c("#e457b5", "#57e486"))+
-  guides(fill=guide_legend(title="Population size"))
+  guides(fill=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 15, 
+           label = paste("Chi-squared p-value =", chi2))
 
-plot_shape_pop <- data_salted %>% #plot number of leaves of each shape, grouped by population
+plot_shape3 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
-  geom_bar(aes(x = Leaf_shape, fill = Population, color = Size), linewidth = 2,
+  geom_bar(aes(x = Leaf_shape, fill = Population, color = Size), 
            position = position_dodge2(width = 0.9, preserve = "single"))+
-  theme_light() +
-  labs(title = "Number of leaves of each shape,\ngrouped by population",
-       subtitle = "Plot only showing high salinity groups",
-       x="Leaf shape",
-       y="Count")+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+
-  guides(color=guide_legend(title="Population size"))
+  annotate("text", x = 3, y = 9.3, 
+           label = "Chi-squared p-value = 0.000")+
+  scale_y_continuous(labels = number_format(accuracy = 1))
+
+
+plotgridshape0 <- plot_grid(plot_shape1, plot_shape2, plot_shape3,
+                            plot_grid(legend1, legend2, legend3, ncol = 1, nrow = 3),
+                            labels = c("A", "B", "C"),
+                            ncol = 4, nrow = 1, rel_widths = c(1, 1, 1, 0.4))
+
+plotgridshape <- ggdraw(add_sub(plotgridshape0, "Shape", vpadding=grid::unit(0,"lines"),y=6, x=0.5, vjust=5.5))
 
 
 
 
-plotgrid <- plot_grid(plot_color, plot_color2, plot_shape_salt, img_leafshapes, plot_shape_popsize, plot_shape_pop, #combine the 3 plots and the leaf shape photo into 1 figure
-                       labels = c("A", "B", "C", "D", "E", "F"),
-                       ncol = 2, nrow = 3)
+
+
 
 
 
@@ -414,28 +431,5 @@ aov(Wet_weight ~ Population*Treatment, data=data_complete) %>% summary() # p = 0
 aov(Number_dif ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.845
 
 
-chisq.test(data_complete$Treatment, data_complete$Leaf_shape, correct=FALSE) # p = 0.003457
-chisq.test(data_salted$Size, data_salted$Leaf_shape, correct=FALSE) # p = 0.01702
-chisq.test(data_salted$Population, data_salted$Leaf_shape, correct=FALSE) # p = 0.0002744
-
-
-plot_color01 <- data_color %>% #plot number of leaves of each color, grouped by treatment
-  ggplot()+ 
-  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
-  theme_light()+
-  labs(x="Color",
-       y="Count")
-
-plot_color03 <- data_color %>% #plot number of leaves of each color, grouped by population
-  ggplot()+ 
-  geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
-           position = position_dodge2(width = 0.9, preserve = "single"))+
-  theme_light()+
-  labs(x="Color",
-       y="Count")+
-  ylab(NULL)+
-  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
-  scale_color_manual(values = c("#e457b5", "#57e486"))+
-  guides(color=guide_legend(title="Population size"))
 
 

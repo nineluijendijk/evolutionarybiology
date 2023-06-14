@@ -16,6 +16,7 @@ library(magick)
 library(here)
 library(agricolae)
 library(ggsignif)
+library(scales)
 
 data_raw <- read_excel(here::here("data/arabidopsis_data.xlsx"), col_types = c("text", rep("numeric", 8), "text")) #making sure every value is numeric
 
@@ -369,13 +370,64 @@ plotgridcolor0 <- plot_grid(plot_color1, plot_color2, plot_color3,
                       ncol = 4, nrow = 1, rel_widths = c(1, 1, 1, 0.4))
 
 plotgridcolor <- ggdraw(add_sub(plotgridcolor0, "Color", vpadding=grid::unit(0,"lines"),y=6, x=0.5, vjust=6))
+
+# ANALYZING SHAPE DIFFERENCE
+
+chi1 <- chisq.test(data_complete$Treatment, data_complete$Leaf_shape, correct=FALSE)$p.value %>% round(digits = 3) # p = 0.003
+chi2 <- chisq.test(data_salted$Size, data_salted$Leaf_shape, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.017
+chi3 <- chisq.test(data_salted$Population, data_salted$Leaf_shape, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.000
+
+plot_shape1 <- data_complete %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  labs(y="Count")+
+  xlab(NULL)+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi1))
+
+plot_shape2 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Size), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#e457b5", "#57e486"))+
+  guides(fill=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 15, 
+           label = paste("Chi-squared p-value =", chi2))
+
+plot_shape3 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Leaf_shape, fill = Population, color = Size), 
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  annotate("text", x = 3, y = 9.3, 
+           label = "Chi-squared p-value = 0.000")+
+  scale_y_continuous(labels = number_format(accuracy = 1))
+
+
+plotgridshape0 <- plot_grid(plot_shape1, plot_shape2, plot_shape3,
+                            plot_grid(legend1, legend2, legend3, ncol = 1, nrow = 3),
+                            labels = c("A", "B", "C"),
+                            ncol = 4, nrow = 1, rel_widths = c(1, 1, 1, 0.4))
+
+plotgridshape <- ggdraw(add_sub(plotgridshape0, "Shape", vpadding=grid::unit(0,"lines"),y=6, x=0.5, vjust=5.5))
 ```
 
 
-```{r, fig.width=11, echo=FALSE}
+```{r, fig.width=11,fig.height=4, echo=FALSE}
 plotgridlength
 plotgridweight
 plotgridnumber
 plotgridcolor
+plotgridshape
 ```
 
