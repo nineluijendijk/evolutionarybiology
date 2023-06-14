@@ -150,7 +150,7 @@ plot_weight1 <- summary %>% #plot the wet weight grouped by population size
                     ymax = mean_wetweight + stdevWetweight), width=.2)+
   theme_light()+
   labs(x="Treatment",
-       y="Mean net weight in grams")+
+       y="Mean wet weight in grams")+
   theme(legend.position = "none", text = element_text(size=12), plot.title = element_text(size=14),
         plot.subtitle = element_text(size=12))+
   geom_signif(comparisons = list(c("High salinity", "Low salinity")),
