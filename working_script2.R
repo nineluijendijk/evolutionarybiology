@@ -66,7 +66,7 @@ summary_complete_pop <- data_salted %>%
 leveneTest(data_complete$Length_dif ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4793, which means equal variance
 
 anno <- t.test(formula = data_complete$Length_dif ~ data_complete$Treatment, 
-               paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.005, which means there is a statistically significant difference in increase in longest leaf length between the High salinity and Low salinity plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.005, which means there is a statistically significant difference in increase in longest leaf length between the High salinity and Low salinity plants.
 
 plot_length1 <- summary %>% #plot the increase in longest leaf length grouped by population size
   ggplot(aes(x = Treatment, y = mean_lengthleaf.increase))+
@@ -84,7 +84,7 @@ plot_length1 <- summary %>% #plot the increase in longest leaf length grouped by
 leveneTest(data_salted$Length_dif ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.7135 which means equal variance
 
 anno <- t.test(formula = data_salted$Length_dif ~ data_salted$Size, 
-               paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistically significant difference between the difference in length of the longest leaf of the large and small High salinity plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.563, which means there is no statistically significant difference between the difference in length of the longest leaf of the large and small High salinity plants.
 
 plot_length2 <- summary_salted %>% #plot the increase in longest leaf length grouped by population size
   ggplot(aes(x = Size, y = mean_lengthleaves.increase))+
@@ -122,8 +122,8 @@ plot_length3 <- summary_complete_pop %>% #plot the increase in longest leaf leng
 
 
 plotgridlength <- plot_grid(plot_length1, plot_length2, plot_length3,
-                            labels = c("A", "B", "C"),
-                            ncol = 3, nrow = 1)
+                      labels = c("A", "B", "C"),
+                      ncol = 3, nrow = 1)
 
 
 # ANALYSIS OF WET WEIGHT DIF
@@ -131,7 +131,7 @@ plotgridlength <- plot_grid(plot_length1, plot_length2, plot_length3,
 leveneTest(data_complete$Wet_weight ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.4168, which means equal variance
 
 anno <- t.test(formula = data_complete$Wet_weight ~ data_complete$Treatment, 
-               paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistically significant difference in wet weight between the High salinity and Low salinity plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.011, which means there is a statistically significant difference in wet weight between the High salinity and Low salinity plants.
 
 plot_weight1 <- summary %>% #plot the wet weight grouped by population size
   ggplot(aes(x = Treatment, y = mean_wetweight))+
@@ -149,7 +149,7 @@ plot_weight1 <- summary %>% #plot the wet weight grouped by population size
 leveneTest(data_salted$Wet_weight ~ as.factor(Size), data = data_salted) #Pr(>F) = 0.3754 which means equal variance
 
 anno <- t.test(formula = data_salted$Wet_weight ~ data_salted$Size, 
-               paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistically significant difference in wet weight between the large and small High salinity plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.848, which means there is no statistically significant difference in wet weight between the large and small High salinity plants.
 
 
 plot_weight2 <-summary_salted %>% #plot the increase in number of leaves grouped by population
@@ -197,7 +197,7 @@ plotgridweight <- plot_grid(plot_weight1, plot_weight2, plot_weight3,
 leveneTest(data_complete$Number_dif ~ as.factor(Treatment), data = data_complete) #Pr(>F) = 0.6024, which means equal variance
 
 anno <- t.test(formula = data_complete$Number_dif ~ data_complete$Treatment, 
-               paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.868, which means there is a statistically significant difference in wet weight between the High salinity and Low salinity plants.
+       paired = FALSE, var.equal = TRUE)$p.value %>% round(.,3) #t-test, p = 0.868, which means there is a statistically significant difference in wet weight between the High salinity and Low salinity plants.
 
 plot_number1 <- summary %>% #plot the increase in number of leaves grouped by population size
   ggplot(aes(x = Treatment, y = mean_noleaves.increase))+
@@ -266,17 +266,11 @@ plotgridnumber <- plot_grid(plot_number1, plot_number2, plot_number3,
 
 
 
+# ANALYZING COLOR DIFFERENCE
 
-
-
-
-
-
-
-
-
-
-
+chi1 <- chisq.test(data_complete$Treatment, data_complete$Color, correct=FALSE)$p.value %>% round(digits = 3) # p = 0.8044
+chi2 <- chisq.test(data_salted$Size, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.3334
+chi3 <- chisq.test(data_salted$Population, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.01822
 
 data_color <- data_complete %>% #prepare color data for plotting
   mutate(Color_graph = case_when(
@@ -285,26 +279,94 @@ data_color <- data_complete %>% #prepare color data for plotting
     Color == 3 ~ "Red",
     Color == 4 ~ "Red and\nyellow"))
 
-plot_color <- data_color %>% #plot number of leaves of each color, grouped by treatment
+plot_color1 <- data_color %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light()+
-  labs(title = "Number of leaves of each color,\ngrouped by treatment",
-       x="Color",
-       y="Count")
+  theme(legend.position = "none")+
+  labs(y="Count")+
+  xlab(NULL)+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi1))
 
 plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi2))
+
+plot_color3 <- data_color %>% #plot number of leaves of each color, grouped by population
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
   theme_light()+
-  labs(title = "Number of leaves of each color,\ngrouped by population",
-       subtitle = "Plot only showing high salinity groups",
-       x="Color",
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 13.1, 
+           label = paste("Chi-squared p-value =", chi3))
+
+
+
+plot_color01 <- data_color %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
+       y="Count")
+
+plot_color02 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  labs(fill = "Population size")+
+  theme_light()+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values = c("#e457b5", "#57e486"))+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi2))
+
+plot_color03 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Population), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
        y="Count")+
+  ylab(NULL)+
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+
   guides(color=guide_legend(title="Population size"))
+
+legend1 <- get_legend(plot_color01)
+legend2 <- get_legend(plot_color02)
+legend3 <- get_legend(plot_color03)
+
+
+plotgridcolor0 <- plot_grid(plot_color1, plot_color2, plot_color3,
+          plot_grid(legend1, legend2, legend3, ncol = 1, nrow = 3),
+                      labels = c("A", "B", "C"),
+                      ncol = 4, nrow = 1, rel_widths = c(1, 1, 1, 0.4))
+
+plotgridcolor <- ggdraw(add_sub(plotgridcolor0, "Color", vpadding=grid::unit(0,"lines"),y=6, x=0.5, vjust=6))
+
+
+
+
+
+
+
 
 plot_shape_salt <- data_complete %>% #plot number of leaves of each shape, grouped by treatment
   ggplot()+ 
@@ -347,11 +409,33 @@ plotgrid <- plot_grid(plot_color, plot_color2, plot_shape_salt, img_leafshapes, 
 
 
 
-aov(Length_dif ~ Population*Treatment, data=data_complete) %>% summary()
-aov(Wet_weight ~ Population*Treatment, data=data_complete) %>% summary()
-aov(Number_dif ~ Population*Treatment, data=data_complete) %>% summary()
+aov(Length_dif ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.5056
+aov(Wet_weight ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.6773
+aov(Number_dif ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.845
 
 
+chisq.test(data_complete$Treatment, data_complete$Leaf_shape, correct=FALSE) # p = 0.003457
+chisq.test(data_salted$Size, data_salted$Leaf_shape, correct=FALSE) # p = 0.01702
+chisq.test(data_salted$Population, data_salted$Leaf_shape, correct=FALSE) # p = 0.0002744
 
+
+plot_color01 <- data_color %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
+       y="Count")
+
+plot_color03 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
+       y="Count")+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))
 
 

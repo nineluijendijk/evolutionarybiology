@@ -267,12 +267,115 @@ plot_number3 <- summary_complete_pop %>% #plot the increase in number of leaves 
 plotgridnumber <- plot_grid(plot_number1, plot_number2, plot_number3,
                             labels = c("A", "B", "C"),
                             ncol = 3, nrow = 1)
+
+
+
+
+
+
+
+
+# ANALYZING COLOR DIFFERENCE
+
+chi1 <- chisq.test(data_complete$Treatment, data_complete$Color, correct=FALSE)$p.value %>% round(digits = 3) # p = 0.8044
+chi2 <- chisq.test(data_salted$Size, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.3334
+chi3 <- chisq.test(data_salted$Population, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.01822
+
+data_color <- data_complete %>% #prepare color data for plotting
+  mutate(Color_graph = case_when(
+    Color == 1 ~ "Green",
+    Color == 2 ~ "Yellow",
+    Color == 3 ~ "Red",
+    Color == 4 ~ "Red and\nyellow"))
+
+plot_color1 <- data_color %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  labs(y="Count")+
+  xlab(NULL)+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi1))
+
+plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi2))
+
+plot_color3 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  theme(legend.position = "none")+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))+
+  annotate("text", x = 3, y = 13.1, 
+           label = paste("Chi-squared p-value =", chi3))
+
+
+
+plot_color01 <- data_color %>% #plot number of leaves of each color, grouped by treatment
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Treatment), position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
+       y="Count")
+
+plot_color02 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  labs(fill = "Population size")+
+  theme_light()+
+  xlab(NULL)+
+  ylab(NULL)+
+  scale_fill_manual(values = c("#e457b5", "#57e486"))+
+  annotate("text", x = 3, y = 22.5, 
+           label = paste("Chi-squared p-value =", chi2))
+
+plot_color03 <- data_color %>% #plot number of leaves of each color, grouped by population
+  ggplot()+ 
+  geom_bar(aes(x = Color_graph, fill = Population), linewidth = 1,
+           position = position_dodge2(width = 0.9, preserve = "single"))+
+  theme_light()+
+  labs(x="Color",
+       y="Count")+
+  ylab(NULL)+
+  scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
+  scale_color_manual(values = c("#e457b5", "#57e486"))+
+  guides(color=guide_legend(title="Population size"))
+
+legend1 <- get_legend(plot_color01)
+legend2 <- get_legend(plot_color02)
+legend3 <- get_legend(plot_color03)
+
+
+plotgridcolor0 <- plot_grid(plot_color1, plot_color2, plot_color3,
+          plot_grid(legend1, legend2, legend3, ncol = 1, nrow = 3),
+                      labels = c("A", "B", "C"),
+                      ncol = 4, nrow = 1, rel_widths = c(1, 1, 1, 0.4))
+
+plotgridcolor <- ggdraw(add_sub(plotgridcolor0, "Color", vpadding=grid::unit(0,"lines"),y=6, x=0.5, vjust=6))
 ```
 
 
 ```{r, fig.width=11, echo=FALSE}
 plotgridlength
-plotgridnumber
 plotgridweight
+plotgridnumber
+plotgridcolor
 ```
 
