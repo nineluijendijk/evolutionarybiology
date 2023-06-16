@@ -273,6 +273,13 @@ chi1 <- chisq.test(data_complete$Treatment, data_complete$Color, correct=FALSE)$
 chi2 <- chisq.test(data_salted$Size, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.3334
 chi3 <- chisq.test(data_salted$Population, data_salted$Color, correct=FALSE)$p.value  %>% round(digits = 3) # p = 0.01822
 
+data_color_salted <- data_salted %>% #prepare color data for plotting
+  mutate(Color_graph = case_when(
+    Color == 1 ~ "Green",
+    Color == 2 ~ "Yellow",
+    Color == 3 ~ "Red",
+    Color == 4 ~ "Red and\nyellow"))
+
 data_color <- data_complete %>% #prepare color data for plotting
   mutate(Color_graph = case_when(
     Color == 1 ~ "Green",
@@ -290,7 +297,7 @@ plot_color1 <- data_color %>% #plot number of leaves of each color, grouped by t
   annotate("text", x = 3, y = 22.5, 
            label = paste("Chi-squared p-value =", chi1))
 
-plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by population
+plot_color2 <- data_color_salted %>% #plot number of leaves of each color, grouped by population
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
@@ -300,10 +307,10 @@ plot_color2 <- data_color %>% #plot number of leaves of each color, grouped by p
   ylab(NULL)+
   scale_fill_manual(values = c("#e457b5", "#57e486"))+
   guides(color=guide_legend(title="Population size"))+
-  annotate("text", x = 3, y = 22.5, 
+  annotate("text", x = 3, y = 11.2, 
            label = paste("Chi-squared p-value =", chi2))
 
-plot_color3 <- data_color %>% #plot number of leaves of each color, grouped by population
+plot_color3 <- data_color_salted %>% #plot number of leaves of each color, grouped by population
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Population, color = Size), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
@@ -314,8 +321,8 @@ plot_color3 <- data_color %>% #plot number of leaves of each color, grouped by p
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+
   guides(color=guide_legend(title="Population size"))+
-  annotate("text", x = 3, y = 13.1, 
-           label = paste("Chi-squared p-value =", chi3))
+  annotate("text", x = 3, y = 7.4, 
+           label = paste0("Chi-squared p-value = ", chi3))
 
 
 
@@ -326,7 +333,7 @@ plot_color01 <- data_color %>% #plot number of leaves of each color, grouped by 
   labs(x="Color",
        y="Count")
 
-plot_color02 <- data_color %>% #plot number of leaves of each color, grouped by population
+plot_color02 <- data_color_salted %>% #plot number of leaves of each color, grouped by population
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Size), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
@@ -338,7 +345,7 @@ plot_color02 <- data_color %>% #plot number of leaves of each color, grouped by 
   annotate("text", x = 3, y = 22.5, 
            label = paste("Chi-squared p-value =", chi2))
 
-plot_color03 <- data_color %>% #plot number of leaves of each color, grouped by population
+plot_color03 <- data_color_salted %>% #plot number of leaves of each color, grouped by population
   ggplot()+ 
   geom_bar(aes(x = Color_graph, fill = Population), linewidth = 1,
            position = position_dodge2(width = 0.9, preserve = "single"))+
@@ -382,7 +389,7 @@ plot_shape1 <- data_complete %>% #plot number of leaves of each color, grouped b
   labs(y="Count")+
   xlab(NULL)+
   annotate("text", x = 3, y = 22.5, 
-           label = paste("Chi-squared p-value =", chi1))
+           label = paste0("Chi-squared p-value = ", chi1, "**"))
 
 plot_shape2 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
@@ -394,7 +401,7 @@ plot_shape2 <- data_salted %>% #plot number of leaves of each color, grouped by 
   scale_fill_manual(values=c("#e457b5", "#57e486"))+
   guides(fill=guide_legend(title="Population size"))+
   annotate("text", x = 3, y = 15, 
-           label = paste("Chi-squared p-value =", chi2))
+           label = paste0("Chi-squared p-value = ", chi2, "*"))
 
 plot_shape3 <- data_salted %>% #plot number of leaves of each color, grouped by treatment
   ggplot()+ 
@@ -407,7 +414,7 @@ plot_shape3 <- data_salted %>% #plot number of leaves of each color, grouped by 
   scale_fill_manual(values=c("#8111ee", "#7eee11", "#f0860f", "#0f79f0"))+
   scale_color_manual(values = c("#e457b5", "#57e486"))+
   annotate("text", x = 3, y = 9.3, 
-           label = "Chi-squared p-value = 0.000")+
+           label = "Chi-squared p-value = 0.000***")+
   scale_y_continuous(labels = number_format(accuracy = 1))
 
 
@@ -420,11 +427,11 @@ plotgridshape <- ggdraw(add_sub(plotgridshape0, "Shape", vpadding=grid::unit(0,"
 
 
 
+data_unsalted <- subset(data_complete, Treatment == "Low salinity")
 
-
-
-
-
+aov(Length_dif ~ Population, data=data_unsalted) %>% summary
+aov(Wet_weight ~ Population, data=data_unsalted) %>% summary
+aov(Number_dif ~ Population, data=data_unsalted) %>% summary
 
 aov(Length_dif ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.5056
 aov(Wet_weight ~ Population*Treatment, data=data_complete) %>% summary() # p = 0.6773
